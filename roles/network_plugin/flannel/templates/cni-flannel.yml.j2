@@ -42,21 +42,12 @@ data:
         "SubnetRemoveCommand": "read PUBLICKEY; wg set flannel-wg peer $PUBLICKEY remove"
 {% elif flannel_backend_type == 'ipsec' %}
         "Type": "{{ flannel_backend_type }}",
-        "PSK": "{{ flannel_ipsec_backend_psk }}",
-        "UDPEncap": true
+        "PSK": "{{ flannel_ipsec_backend_psk }}"
 {% else %}
         "Type": "{{ flannel_backend_type }}"
 {% endif %}
       }
     }
-{% if flannel_backend_type == 'ipsec' %}
-  charon.conf: |
-    charon {
-        # Install routes into a separate routing table for established IPsec
-        # tunnels.
-        install_routes = yes
-    }
-{% endif %}
 ---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
@@ -113,11 +104,6 @@ spec:
           mountPath: /etc/cni/net.d
         - name: flannel-cfg
           mountPath: /etc/kube-flannel/
-{% if flannel_backend_type == 'ipsec' %}
-        - name: flannel-cfg
-          mountPath: /etc/strongswan.d/charon.conf
-          subPath: charon.conf
-{% endif %}
       - name: install-cni
         image: {{ flannel_cni_image_repo }}:{{ flannel_cni_image_tag }}
         command: ["/install-cni.sh"]
