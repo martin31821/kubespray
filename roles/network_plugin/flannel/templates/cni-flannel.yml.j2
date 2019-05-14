@@ -42,7 +42,9 @@ data:
         "SubnetRemoveCommand": "read PUBLICKEY; wg set flannel-wg peer $PUBLICKEY remove"
 {% elif flannel_backend_type == 'ipsec' %}
         "Type": "{{ flannel_backend_type }}",
-        "PSK": "{{ flannel_ipsec_backend_psk }}"
+        "PSK": "{{ flannel_ipsec_backend_psk }}",
+        "K8SMode": true,
+        "K8SIPVS": true
 {% else %}
         "Type": "{{ flannel_backend_type }}"
 {% endif %}
